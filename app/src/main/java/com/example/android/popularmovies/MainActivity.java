@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "doInBackground: ");
             HttpURLConnection urlConnection = null;
             String urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
-//            String popMoviesUrl = "/discover/movie?sort_by=popularity.desc?";
 
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
@@ -88,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                     textOutput.append(response[i] + "\n");
                 }
             }
-
         }
     }
 
