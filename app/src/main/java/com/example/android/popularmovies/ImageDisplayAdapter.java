@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -22,8 +23,14 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
     private int imageWidth = 0;
     private int imageHeight = 0;
 
-    public ImageDisplayAdapter(){
+    final private ImageDisplayAdapterOnClickHandler mClickHandler;
 
+    public interface ImageDisplayAdapterOnClickHandler{
+        void onDisplayImageClicked();
+    }
+
+    public ImageDisplayAdapter(ImageDisplayAdapterOnClickHandler clickHandler){
+        mClickHandler = clickHandler;
     }
 
     public void setImageData(String[] imageData){
@@ -31,12 +38,19 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
         notifyDataSetChanged();
     }
 
-    public class ImageDisplayAdapterViewHolder extends RecyclerView.ViewHolder{
+    public class ImageDisplayAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final ImageView mImageDisplay;
 
         public ImageDisplayAdapterViewHolder(View view) {
             super(view);
             mImageDisplay = (ImageView) view.findViewById(R.id.imageDisplay);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(context, "Hello world", Toast.LENGTH_LONG).show();
+            mClickHandler.onDisplayImageClicked();
         }
     }
     @Override

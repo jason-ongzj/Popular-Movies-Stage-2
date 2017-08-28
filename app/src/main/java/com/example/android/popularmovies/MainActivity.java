@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +19,7 @@ import java.net.URL;
 
 import static com.example.android.popularmovies.R.id.textOutput;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler{
 
     private TextView mTextOutput;
     private ImageDisplayAdapter mImageDisplayAdapter;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity{
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mImageDisplayAdapter = new ImageDisplayAdapter();
+        mImageDisplayAdapter = new ImageDisplayAdapter(this);
         mImageDisplayAdapter.setContext(this);
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -50,9 +51,15 @@ public class MainActivity extends AppCompatActivity{
 
         String apiKey = "***REMOVED***";
 
-
-
         new RetrieveFeedTask().execute(apiKey);
+    }
+
+    @Override
+    public void onDisplayImageClicked() {
+        // Set activity intent
+        Class destinationActivity = DetailActivity.class;
+        Intent intent = new Intent(this, destinationActivity);
+        startActivity(intent);
     }
 
     class RetrieveFeedTask extends AsyncTask<String, Void, String[]> {
@@ -111,7 +118,6 @@ public class MainActivity extends AppCompatActivity{
         }
 
         protected void onPostExecute(String[] imageData) {
- //           Log.d(TAG, "onPostExecute: " + imageData[1]);
             if (imageData != null){
                 mImageDisplayAdapter.setImageData(imageData);
                 mRecyclerView.setVisibility(View.VISIBLE);
