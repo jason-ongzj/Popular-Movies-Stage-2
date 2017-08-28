@@ -89,6 +89,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
             return movieData;
         }
     }
+
     @Override
     public ImageDisplayAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutIdForImageDisplayItem = R.layout.image_display_item;

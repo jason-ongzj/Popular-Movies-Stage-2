@@ -8,6 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
     private TextView mTextOutput;
     private ImageDisplayAdapter mImageDisplayAdapter;
     private RecyclerView mRecyclerView;
+    private static int DISPLAY_STATE = 0;
+
+    // TODO: Fill in your own API key here
+    private static final String APIKEY = "***REMOVED***";
 
     private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
     private Parcelable savedRecyclerLayoutState;
@@ -48,9 +55,33 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
         mRecyclerView.setHasFixedSize(true);
 
-        String apiKey = "***REMOVED***";
+        new RetrieveFeedTask().execute(APIKEY);
+    }
 
-        new RetrieveFeedTask().execute(apiKey);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.movie_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch(id) {
+            case R.id.most_popular:
+                DISPLAY_STATE = 0;
+                Log.d(TAG, "onOptionsItemSelected: State" + DISPLAY_STATE);
+                new RetrieveFeedTask().execute(APIKEY);
+                return true;
+            case R.id.top_rated:
+                DISPLAY_STATE = 1;
+                Log.d(TAG, "onOptionsItemSelected: State" + DISPLAY_STATE);
+                new RetrieveFeedTask().execute(APIKEY);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -71,14 +102,6 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         }
         Log.d(TAG, "onRestoreInstanceState: Restoring recycler view");
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if (savedRecyclerLayoutState != null) {
-//
-//        }
-//    }
 
     // Pass data through a single string array into intent
     @Override
@@ -102,14 +125,18 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
         protected String doInBackground(String... apiKey) {
             Log.d(TAG, "doInBackground: ");
+            String urlString = "";
             HttpURLConnection urlConnection = null;
-            String urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
-
+            if (DISPLAY_STATE == 0) {
+                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
+            } else if (DISPLAY_STATE == 1){
+                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc?";
+            }
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
 
-                // Add test for internet connection later
+                //TODO: Add test for internet connection later
 
                 urlConnection.setRequestMethod(REQUEST_METHOD);
                 urlConnection.setReadTimeout(READ_TIMEOUT);

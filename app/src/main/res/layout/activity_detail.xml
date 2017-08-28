@@ -12,8 +12,10 @@
         android:layout_width="148dp"
         android:layout_height="208dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="false"
+        android:contentDescription="@string/poster"
         android:scaleType="fitStart"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
@@ -23,8 +25,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="0dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:text="TextView"
         android:textColor="@android:color/background_light"
         android:textSize="12sp"
         app:layout_constraintHorizontal_bias="0.5"
@@ -56,14 +58,14 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:padding="0dp"
-        android:text="Overview"
+        android:text="@string/overview"
         android:textColor="@android:color/background_light"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Poster"
-        app:layout_constraintHorizontal_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/Poster" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/linearLayout2"
@@ -72,8 +74,7 @@
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
-        android:background="?android:attr/colorForeground"
-        android:backgroundTint="@android:color/holo_red_light"
+        android:background="@android:color/holo_red_dark"
         android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -86,7 +87,6 @@
             android:layout_margin="8dp"
             android:layout_weight="1"
             android:paddingTop="0dp"
-            android:text="TextView"
             android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="20sp"
@@ -118,18 +118,16 @@
         <TextView
             android:id="@+id/Release_Date"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_marginTop="0dp"
-            android:text="TextView"
             android:textColor="@android:color/background_light"
-            android:textSize="16sp" />
+            android:textSize="17sp" />
 
         <TextView
             android:id="@+id/Rating"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
             android:textColor="@android:color/background_light"
             android:textSize="16sp"
             tools:layout_editor_absoluteX="8dp"

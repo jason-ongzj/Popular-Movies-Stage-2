@@ -8,9 +8,6 @@
         <!--<item name="colorAccent">@color/colorAccent</item>-->
     </style>
 
-    <style name="AppTheme.GrayStatusBar" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorGray">@color/colorGray</item>
-    </style>
 
 </resources>
 <!---->
