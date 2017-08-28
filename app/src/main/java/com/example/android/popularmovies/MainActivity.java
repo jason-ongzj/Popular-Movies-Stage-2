@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,10 +22,13 @@ import java.net.URL;
 import static com.example.android.popularmovies.R.id.textOutput;
 
 public class MainActivity extends AppCompatActivity implements ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler{
-
+    private static final String TAG = "MainActivity";
     private TextView mTextOutput;
     private ImageDisplayAdapter mImageDisplayAdapter;
     private RecyclerView mRecyclerView;
+
+    private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
+    private Parcelable savedRecyclerLayoutState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,33 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
         new RetrieveFeedTask().execute(apiKey);
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        savedRecyclerLayoutState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, savedRecyclerLayoutState);
+        Log.d(TAG, "onSaveInstanceState: Saving recycler view");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState == null){
+            savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
+        Log.d(TAG, "onRestoreInstanceState: Restoring recycler view");
+    }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (savedRecyclerLayoutState != null) {
+//
+//        }
+//    }
 
     // Pass data through a single string array into intent
     @Override

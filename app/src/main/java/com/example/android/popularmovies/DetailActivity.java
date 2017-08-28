@@ -32,18 +32,21 @@ public class DetailActivity extends AppCompatActivity {
         if (intentThatStartedThisActivity.hasExtra("movieData")) {
             Log.d(TAG, "onCreate: Intent started");
             String[] movieData = intentThatStartedThisActivity.getStringArrayExtra("movieData");
-            Log.d(TAG, "onCreate: " + movieData[1]);
+            Log.d(TAG, "onCreate: " + movieData[3] + ",");
 
             // 1 - imageURL, 2 - title, 3 - release date, 4 - rating, 5 - synopsis
             Picasso.with(this).load(movieData[0]).fit().into(mPoster);
             mTitle.setText(movieData[1]);
-            mReleaseDate.setText(movieData[2]);
+            mReleaseDate.setText("Release Date :" + movieData[2]);
 
-            if (movieData[3] == "0") {
+            if (movieData[3].matches("0")) {
                 mRating.setText("No Rating");
-            } else mRating.setText(movieData[3]);
+            } else mRating.setText("Rating: " +movieData[3] + "/10");
 
-            mSynopsis.setText(movieData[4]);
+            if (movieData[4].matches("")){
+                mSynopsis.setText("No synopsis given.");
+            } else mSynopsis.setText(movieData[4]);
+
         }
     }
 }
