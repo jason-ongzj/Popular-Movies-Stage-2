@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,12 +40,6 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         mImageDisplayAdapter = new ImageDisplayAdapter(this);
         mImageDisplayAdapter.setContext(this);
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int height = metrics.heightPixels;
-        int width = metrics.widthPixels;
-        mImageDisplayAdapter.setImageSize(width, height);
-
         mRecyclerView.setAdapter(mImageDisplayAdapter);
 
         mRecyclerView.setHasFixedSize(true);
@@ -54,15 +49,16 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         new RetrieveFeedTask().execute(apiKey);
     }
 
+    // Pass data through a single string array into intent
     @Override
-    public void onDisplayImageClicked() {
-        // Set activity intent
+    public void onDisplayImageClicked(String[] movieData) {
         Class destinationActivity = DetailActivity.class;
         Intent intent = new Intent(this, destinationActivity);
+        intent.putExtra("movieData", movieData);
         startActivity(intent);
     }
 
-    class RetrieveFeedTask extends AsyncTask<String, Void, String[]> {
+    class RetrieveFeedTask extends AsyncTask<String, Void, String> {
         private static final String TAG = "AsyncTask";
         public static final String REQUEST_METHOD = "GET";
         public static final int READ_TIMEOUT = 15000;
@@ -73,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             mTextOutput.setText("");
         }
 
-        protected String[] doInBackground(String... apiKey) {
+        protected String doInBackground(String... apiKey) {
             Log.d(TAG, "doInBackground: ");
             HttpURLConnection urlConnection = null;
             String urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
@@ -102,14 +98,15 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 bufferedReader.close();
                 streamReader.close();
 
-                String[] result = MovieDataBaseUtils.getImageFromJson(MainActivity.this, stringBuilder.toString());
+                Log.d(TAG, "doInBackground: " + MovieDataBaseUtils.getResults(stringBuilder.toString()));
+
+                String result = stringBuilder.toString();
                 return result;
 
             } catch(IOException e) {
                 e.printStackTrace();
-            } catch(Exception e){
-                e.printStackTrace();
-            } finally {
+            }
+            finally {
                 if(urlConnection != null){
                     urlConnection.disconnect();
                 }
@@ -117,10 +114,24 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             return null;
         }
 
-        protected void onPostExecute(String[] imageData) {
-            if (imageData != null){
-                mImageDisplayAdapter.setImageData(imageData);
-                mRecyclerView.setVisibility(View.VISIBLE);
+        protected void onPostExecute(String movieResults) {
+            try {
+                if (movieResults != null) {
+                // Set data to be retrieved when DetailActivity is called
+                    mImageDisplayAdapter.setImageData(MovieDataBaseUtils.getImageFromJson(movieResults));
+
+                    mImageDisplayAdapter.setTitle(MovieDataBaseUtils.getMovieTitles(movieResults));
+
+                    mImageDisplayAdapter.setReleaseDates(MovieDataBaseUtils.getReleaseDate(movieResults));
+
+                    mImageDisplayAdapter.setSynopsis(MovieDataBaseUtils.getSynopses(movieResults));
+
+                    mImageDisplayAdapter.setVoteAverage(MovieDataBaseUtils.getVoteAverage(movieResults));
+
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                }
+            } catch (JSONException e){
+                e.printStackTrace();
             }
         }
     }
