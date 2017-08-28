@@ -3,8 +3,9 @@ package com.example.android.popularmovies;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -31,17 +32,25 @@ public class MainActivity extends AppCompatActivity{
         mTextOutput = (TextView) findViewById(textOutput);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_display);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setReverseLayout(false);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mImageDisplayAdapter = new ImageDisplayAdapter();
+        mImageDisplayAdapter.setContext(this);
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int height = metrics.heightPixels;
+        int width = metrics.widthPixels;
+        mImageDisplayAdapter.setImageSize(width, height);
+
         mRecyclerView.setAdapter(mImageDisplayAdapter);
 
         mRecyclerView.setHasFixedSize(true);
 
         String apiKey = "***REMOVED***";
+
+
 
         new RetrieveFeedTask().execute(apiKey);
     }
@@ -65,6 +74,8 @@ public class MainActivity extends AppCompatActivity{
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
+
+                // Add test for internet connection later
 
                 urlConnection.setRequestMethod(REQUEST_METHOD);
                 urlConnection.setReadTimeout(READ_TIMEOUT);
@@ -100,21 +111,11 @@ public class MainActivity extends AppCompatActivity{
         }
 
         protected void onPostExecute(String[] imageData) {
-            Log.d(TAG, "onPostExecute: " + imageData[0]);
-//            if(imageData != null) {
-//                for (int i = 0; i < imageData.length; i++){
-//                    mTextOutput.append(imageData[i] + "\n");
-//                }
-//            }
+ //           Log.d(TAG, "onPostExecute: " + imageData[1]);
             if (imageData != null){
                 mImageDisplayAdapter.setImageData(imageData);
                 mRecyclerView.setVisibility(View.VISIBLE);
             }
         }
-
-
     }
-
-
-
 }
