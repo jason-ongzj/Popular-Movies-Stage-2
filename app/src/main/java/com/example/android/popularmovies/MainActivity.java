@@ -3,7 +3,10 @@ package com.example.android.popularmovies;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -12,15 +15,31 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.android.popularmovies.R.id.textOutput;
 
-    private TextView textOutput;
+public class MainActivity extends AppCompatActivity{
+
+    private TextView mTextOutput;
+    private ImageDisplayAdapter mImageDisplayAdapter;
+    private RecyclerView mRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textOutput = (TextView) findViewById(R.id.textOutput);
+        mTextOutput = (TextView) findViewById(textOutput);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_display);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setReverseLayout(false);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        mImageDisplayAdapter = new ImageDisplayAdapter();
+        mRecyclerView.setAdapter(mImageDisplayAdapter);
+
+        mRecyclerView.setHasFixedSize(true);
 
         String apiKey = "***REMOVED***";
 
@@ -35,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         private Exception exception;
 
         protected void onPreExecute() {
-            textOutput.setText("");
+            mTextOutput.setText("");
         }
 
         protected String[] doInBackground(String... apiKey) {
@@ -80,14 +99,20 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
-        protected void onPostExecute(String[] response) {
-            Log.d(TAG, "onPostExecute: " + response);
-            if(response != null) {
-                for (int i = 0; i < response.length; i++){
-                    textOutput.append(response[i] + "\n");
-                }
+        protected void onPostExecute(String[] imageData) {
+            Log.d(TAG, "onPostExecute: " + imageData[0]);
+//            if(imageData != null) {
+//                for (int i = 0; i < imageData.length; i++){
+//                    mTextOutput.append(imageData[i] + "\n");
+//                }
+//            }
+            if (imageData != null){
+                mImageDisplayAdapter.setImageData(imageData);
+                mRecyclerView.setVisibility(View.VISIBLE);
             }
         }
+
+
     }
 
 

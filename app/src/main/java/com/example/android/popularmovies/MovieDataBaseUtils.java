@@ -20,7 +20,7 @@ public class MovieDataBaseUtils {
         parsedMovieImageURL = new String[movieResultsJSON.length()];
         for (int i = 0; i < movieResultsJSON.length(); i++){
             JSONObject movie = movieResultsJSON.getJSONObject(i);
-            String image_url = movie.getString("poster_path");
+            String image_url = "https://image.tmdb.org/t/p/w185" + movie.getString("poster_path");
             parsedMovieImageURL[i] = image_url;
         }
         return parsedMovieImageURL;

@@ -9,18 +9,12 @@
     <TextView
         android:id="@+id/textOutput"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="TextView" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_display"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
-
-    <ImageView
-        android:id="@+id/posterImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/ic_launcher" />
 
 </FrameLayout>
