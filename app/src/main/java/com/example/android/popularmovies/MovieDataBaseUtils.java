@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class MovieDataBaseUtils {
 
-    public static JSONArray getResults(String response) {
+    public static JSONArray getResults(String response){
         try {
             JSONObject movieJSON = new JSONObject(response);
             JSONArray movieResultsJSON = movieJSON.getJSONArray("results");
@@ -21,61 +21,69 @@ public class MovieDataBaseUtils {
         return null;
     }
 
-    // Get movie image URLs
     public static String[] getImageFromJson(String response) throws JSONException{
-        String[] parsedMovieImageURL = null;
         JSONArray movieResultsJSON = getResults(response);
-        parsedMovieImageURL = new String[movieResultsJSON.length()];
-        for (int i = 0; i < movieResultsJSON.length(); i++){
-            JSONObject movie = movieResultsJSON.getJSONObject(i);
-            String image_url = "https://image.tmdb.org/t/p/w185" + movie.getString("poster_path");
-            parsedMovieImageURL[i] = image_url;
+        if (movieResultsJSON != null) {
+            String[] parsedMovieImageURL = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movie = movieResultsJSON.getJSONObject(i);
+                String image_url = "https://image.tmdb.org/t/p/w185" + movie.getString("poster_path");
+                parsedMovieImageURL[i] = image_url;
+            }
+            return parsedMovieImageURL;
         }
-        return parsedMovieImageURL;
+        return null;
     }
 
-    // Get movie titles
     public static String[] getMovieTitles(String response) throws JSONException {
-        String[] movieTitle = null;
         JSONArray movieResultsJSON = getResults(response);
-        movieTitle = new String[movieResultsJSON.length()];
-        for (int i = 0; i < movieResultsJSON.length(); i++) {
-            JSONObject movie = movieResultsJSON.getJSONObject(i);
-            movieTitle[i] = movie.getString("title");
+        if (movieResultsJSON != null) {
+            String[] movieTitle = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movie = movieResultsJSON.getJSONObject(i);
+                movieTitle[i] = movie.getString("title");
+            }
+            return movieTitle;
         }
-        return movieTitle;
+        return null;
     }
 
     public static String[] getVoteAverage(String response) throws JSONException {
-        String[] voteAverage = null;
         JSONArray movieResultsJSON = getResults(response);
-        voteAverage = new String[movieResultsJSON.length()];
-        for (int i = 0; i < movieResultsJSON.length(); i++) {
-            JSONObject movie = movieResultsJSON.getJSONObject(i);
-            voteAverage[i] = movie.getString("vote_average");
+        if (movieResultsJSON != null) {
+            String[] voteAverage = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movie = movieResultsJSON.getJSONObject(i);
+                voteAverage[i] = movie.getString("vote_average");
+            }
+            return voteAverage;
         }
-        return voteAverage;
+        return null;
     }
 
     public static String[] getSynopses(String response) throws JSONException {
-        String[] movieSynopses = null;
         JSONArray movieResultsJSON = getResults(response);
-        movieSynopses = new String[movieResultsJSON.length()];
-        for (int i = 0; i < movieResultsJSON.length(); i++) {
-            JSONObject movie = movieResultsJSON.getJSONObject(i);
-            movieSynopses[i] = movie.getString("overview");
+        if (movieResultsJSON != null) {
+            String[] movieSynopses = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movie = movieResultsJSON.getJSONObject(i);
+                movieSynopses[i] = movie.getString("overview");
+            }
+            return movieSynopses;
         }
-        return movieSynopses;
+        return null;
     }
 
     public static String[] getReleaseDate(String response) throws JSONException {
-        String[] releaseDate = null;
         JSONArray movieResultsJSON = getResults(response);
-        releaseDate = new String[movieResultsJSON.length()];
-        for (int i = 0; i < movieResultsJSON.length(); i++) {
-            JSONObject movie = movieResultsJSON.getJSONObject(i);
-            releaseDate[i] = movie.getString("release_date");
+        if (movieResultsJSON != null) {
+            String[] releaseDate = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movie = movieResultsJSON.getJSONObject(i);
+                releaseDate[i] = movie.getString("release_date");
+            }
+            return releaseDate;
         }
-        return releaseDate;
+        return null;
     }
 }

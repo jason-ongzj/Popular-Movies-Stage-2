@@ -1,6 +1,9 @@
 package com.example.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,17 +25,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static com.example.android.popularmovies.R.id.textOutput;
-
 public class MainActivity extends AppCompatActivity implements ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler{
     private static final String TAG = "MainActivity";
-    private TextView mTextOutput;
+    private TextView mErrorDisplay;
     private ImageDisplayAdapter mImageDisplayAdapter;
     private RecyclerView mRecyclerView;
     private static int DISPLAY_STATE = 0;
 
     // TODO: Fill in your own API key here
-    private static final String APIKEY = "***REMOVED***";
+    private static final String api_key = "";
 
     private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
     private Parcelable savedRecyclerLayoutState;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextOutput = (TextView) findViewById(textOutput);
+        mErrorDisplay = (TextView) findViewById(R.id.error_display);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_display);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
         mRecyclerView.setHasFixedSize(true);
 
-        new RetrieveFeedTask().execute(APIKEY);
+        new RetrieveFeedTask().execute(api_key);
     }
 
     @Override
@@ -72,14 +73,13 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         switch(id) {
             case R.id.most_popular:
                 DISPLAY_STATE = 0;
-                Log.d(TAG, "onOptionsItemSelected: State" + DISPLAY_STATE);
-                new RetrieveFeedTask().execute(APIKEY);
+                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+                displayOnMenuItemSelected();
                 return true;
             case R.id.top_rated:
                 DISPLAY_STATE = 1;
-                Log.d(TAG, "onOptionsItemSelected: State" + DISPLAY_STATE);
-                new RetrieveFeedTask().execute(APIKEY);
-                return true;
+                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+                displayOnMenuItemSelected();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -112,6 +112,38 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         startActivity(intent);
     }
 
+    private boolean displayOnMenuItemSelected(){
+        if(!isInternetConnected()){
+            showDisplayError();
+            return false;
+        } else {
+            new RetrieveFeedTask().execute(api_key);
+            showMovieCatalogue();
+            return true;
+        }
+    }
+
+    private boolean isInternetConnected(){
+        Context context = MainActivity.this;
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
+
+    private void showDisplayError(){
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorDisplay.setVisibility(View.VISIBLE);
+    }
+
+    private void showMovieCatalogue(){
+        mRecyclerView.setVisibility(View.VISIBLE);
+        mErrorDisplay.setVisibility(View.INVISIBLE);
+    }
+
     class RetrieveFeedTask extends AsyncTask<String, Void, String> {
         private static final String TAG = "AsyncTask";
         public static final String REQUEST_METHOD = "GET";
@@ -119,18 +151,20 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         public static final int CONNECTION_TIMEOUT = 15000;
         private Exception exception;
 
+        @Override
         protected void onPreExecute() {
-            mTextOutput.setText("");
+            super.onPreExecute();
         }
 
         protected String doInBackground(String... apiKey) {
             Log.d(TAG, "doInBackground: ");
+
             String urlString = "";
             HttpURLConnection urlConnection = null;
             if (DISPLAY_STATE == 0) {
                 urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
             } else if (DISPLAY_STATE == 1){
-                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc?";
+                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc";
             }
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
@@ -186,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
                     mImageDisplayAdapter.setVoteAverage(MovieDataBaseUtils.getVoteAverage(movieResults));
 
-                    mRecyclerView.setVisibility(View.VISIBLE);
+                    showMovieCatalogue();
                 }
             } catch (JSONException e){
                 e.printStackTrace();
