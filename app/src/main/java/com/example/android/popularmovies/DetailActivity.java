@@ -11,22 +11,17 @@ import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
     public static final String TAG = "DetailActivity";
-    private ImageView mPoster;
-    private TextView mRating;
-    private TextView mReleaseDate;
-    private TextView mSynopsis;
-    private TextView mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mPoster = (ImageView) findViewById(R.id.Poster);
-        mRating = (TextView) findViewById(R.id.Rating);
-        mReleaseDate = (TextView) findViewById(R.id.Release_Date);
-        mSynopsis = (TextView) findViewById(R.id.Synopsis);
-        mTitle = (TextView) findViewById(R.id.Title);
+        ImageView mPoster = (ImageView) findViewById(R.id.Poster);
+        TextView mRating = (TextView) findViewById(R.id.Rating);
+        TextView mReleaseDate = (TextView) findViewById(R.id.Release_Date);
+        TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
+        TextView mTitle = (TextView) findViewById(R.id.Title);
 
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity.hasExtra("movieData")) {
@@ -40,7 +35,7 @@ public class DetailActivity extends AppCompatActivity {
 
             if (movieData[3].matches("0")) {
                 mRating.setText("No Rating");
-            } else mRating.setText("Rating: " +movieData[3] + "/10");
+            } else mRating.setText("Rating: " + movieData[3] + "/10");
 
             if (movieData[4].matches("")){
                 mSynopsis.setText("No synopsis given.");

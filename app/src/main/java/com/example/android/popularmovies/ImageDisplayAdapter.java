@@ -10,10 +10,6 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by Ben on 8/27/2017.
- */
-
 public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapter.ImageDisplayAdapterViewHolder>{
     private String[] mMovieImageResults;
     private String[] mMovieTitles;

@@ -4,17 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by Ben on 8/27/2017.
- */
-
 public class MovieDataBaseUtils {
 
     public static JSONArray getResults(String response){
         try {
             JSONObject movieJSON = new JSONObject(response);
-            JSONArray movieResultsJSON = movieJSON.getJSONArray("results");
-            return movieResultsJSON;
+            return movieJSON.getJSONArray("results");
         } catch (JSONException e){
             e.printStackTrace();
         }

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
         mRecyclerView.setHasFixedSize(true);
 
-        new RetrieveFeedTask().execute(api_key);
+        displayOnRequest();
     }
 
     @Override
@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             case R.id.most_popular:
                 DISPLAY_STATE = 0;
                 Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
-                displayOnMenuItemSelected();
+                displayOnRequest();
                 return true;
             case R.id.top_rated:
                 DISPLAY_STATE = 1;
                 Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
-                displayOnMenuItemSelected();
+                displayOnRequest();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         startActivity(intent);
     }
 
-    private boolean displayOnMenuItemSelected(){
+    private boolean displayOnRequest(){
         if(!isInternetConnected()){
             showDisplayError();
             return false;
@@ -129,9 +129,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        return isConnected;
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     private void showDisplayError(){
@@ -149,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         public static final String REQUEST_METHOD = "GET";
         public static final int READ_TIMEOUT = 15000;
         public static final int CONNECTION_TIMEOUT = 15000;
-        private Exception exception;
 
         @Override
         protected void onPreExecute() {
@@ -192,8 +189,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
                 Log.d(TAG, "doInBackground: " + MovieDataBaseUtils.getResults(stringBuilder.toString()));
 
-                String result = stringBuilder.toString();
-                return result;
+                return stringBuilder.toString();
 
             } catch(IOException e) {
                 e.printStackTrace();
