@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
     private RecyclerView mRecyclerView;
     private static int DISPLAY_STATE = 0;
 
-    // TODO: Fill in your own API key here
-    private static final String api_key = "";
+    // Make your own api_key.properties file in /app folder. Variable name myAPI_Key
+    private static final String api_key = BuildConfig.MOVIES_DB_API_KEY;
 
     private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
     private Parcelable savedRecyclerLayoutState;

@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def apiKeyPropertiesFile = rootProject.file('app/api_key.properties')
+def apiKeyProperties = new Properties()
+apiKeyProperties.load(new FileInputStream(apiKeyPropertiesFile))
+
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.1"
@@ -16,6 +20,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    buildTypes.each{
+        it.buildConfigField('String', 'MOVIES_DB_API_KEY', apiKeyProperties['myAPI_key'])
     }
 }
 
