@@ -22,8 +22,13 @@ public class MovieDataBaseUtils {
             String[] parsedMovieImageURL = new String[movieResultsJSON.length()];
             for (int i = 0; i < movieResultsJSON.length(); i++) {
                 JSONObject movie = movieResultsJSON.getJSONObject(i);
-                String image_url = "https://image.tmdb.org/t/p/w185" + movie.getString("poster_path");
-                parsedMovieImageURL[i] = image_url;
+                String poster_path = movie.getString("poster_path");
+                if (poster_path.matches("")){
+                    parsedMovieImageURL[i] = "";
+                } else {
+                    String image_url = "https://image.tmdb.org/t/p/w185" + poster_path;
+                    parsedMovieImageURL[i] = image_url;
+                }
             }
             return parsedMovieImageURL;
         }

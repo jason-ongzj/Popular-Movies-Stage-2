@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,7 +18,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        ImageView mPoster = (ImageView) findViewById(R.id.Poster);
+        final ImageView mPoster = (ImageView) findViewById(R.id.Poster);
         TextView mRating = (TextView) findViewById(R.id.Rating);
         TextView mReleaseDate = (TextView) findViewById(R.id.Release_Date);
         TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
@@ -29,9 +30,16 @@ public class DetailActivity extends AppCompatActivity {
             String[] movieData = intentThatStartedThisActivity.getStringArrayExtra("movieData");
 
             // 1 - imageURL, 2 - title, 3 - release date, 4 - rating, 5 - synopsis
-            Picasso.with(this).load(movieData[0]).fit().into(mPoster);
+            Picasso.Builder builder = new Picasso.Builder(this);
+            builder.listener(new Picasso.Listener(){
+                @Override
+                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
+                    picasso.load(R.drawable.filler).fit().into(mPoster);
+                }
+            });
+            builder.build().load(movieData[0]).fit().into(mPoster);
             mTitle.setText(movieData[1]);
-            mReleaseDate.setText("Release Date :" + movieData[2]);
+            mReleaseDate.setText("Release Date: " + movieData[2]);
 
             if (movieData[3].matches("0")) {
                 mRating.setText("No Rating");

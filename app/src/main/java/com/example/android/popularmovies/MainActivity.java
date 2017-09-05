@@ -159,9 +159,11 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             String urlString = "";
             HttpURLConnection urlConnection = null;
             if (DISPLAY_STATE == 0) {
-                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
+//                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
+                urlString = "https://api.themoviedb.org/3/movie/popular?";
             } else if (DISPLAY_STATE == 1){
-                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc";
+//                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc";
+                urlString = "https://api.themoviedb.org/3/movie/top_rated?";
             }
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
