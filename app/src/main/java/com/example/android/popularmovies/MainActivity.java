@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.utils.MovieDataBaseUtils;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -105,10 +107,10 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
     // Pass data through a single string array into intent
     @Override
-    public void onDisplayImageClicked(String[] movieData) {
+    public void onDisplayImageClicked(Movie movieData) {
         Class destinationActivity = DetailActivity.class;
         Intent intent = new Intent(this, destinationActivity);
-        intent.putExtra("movieData", movieData);
+        intent.putExtra("Movie", movieData);
         startActivity(intent);
     }
 
@@ -159,17 +161,13 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             String urlString = "";
             HttpURLConnection urlConnection = null;
             if (DISPLAY_STATE == 0) {
-//                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc?";
                 urlString = "https://api.themoviedb.org/3/movie/popular?";
             } else if (DISPLAY_STATE == 1){
-//                urlString = "https://api.themoviedb.org/3/discover/movie?sort_by=vote_average.desc";
                 urlString = "https://api.themoviedb.org/3/movie/top_rated?";
             }
             try {
                 URL url = new URL(urlString + "&api_key=" + apiKey[0]);
                 urlConnection = (HttpURLConnection) url.openConnection();
-
-                //TODO: Add test for internet connection later
 
                 urlConnection.setRequestMethod(REQUEST_METHOD);
                 urlConnection.setReadTimeout(READ_TIMEOUT);
@@ -208,16 +206,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             try {
                 if (movieResults != null) {
                 // Set data to be retrieved when DetailActivity is called
-                    mImageDisplayAdapter.setImageData(MovieDataBaseUtils.getImageFromJson(movieResults));
-
-                    mImageDisplayAdapter.setTitle(MovieDataBaseUtils.getMovieTitles(movieResults));
-
-                    mImageDisplayAdapter.setReleaseDates(MovieDataBaseUtils.getReleaseDate(movieResults));
-
-                    mImageDisplayAdapter.setSynopsis(MovieDataBaseUtils.getSynopses(movieResults));
-
-                    mImageDisplayAdapter.setVoteAverage(MovieDataBaseUtils.getVoteAverage(movieResults));
-
+                    mImageDisplayAdapter.setMovies(MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults));
                     showMovieCatalogue();
                 }
             } catch (JSONException e){

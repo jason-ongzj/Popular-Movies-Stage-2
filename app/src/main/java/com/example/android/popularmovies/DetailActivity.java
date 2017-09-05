@@ -1,7 +1,7 @@
 package com.example.android.popularmovies;
 
-import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +24,9 @@ public class DetailActivity extends AppCompatActivity {
         TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
         TextView mTitle = (TextView) findViewById(R.id.Title);
 
-        Intent intentThatStartedThisActivity = getIntent();
-        if (intentThatStartedThisActivity.hasExtra("movieData")) {
+        Movie movie = getIntent().getExtras().getParcelable("Movie");
+        if(movie != null){
             Log.d(TAG, "onCreate: Intent started");
-            String[] movieData = intentThatStartedThisActivity.getStringArrayExtra("movieData");
 
             // 1 - imageURL, 2 - title, 3 - release date, 4 - rating, 5 - synopsis
             Picasso.Builder builder = new Picasso.Builder(this);
@@ -37,17 +36,17 @@ public class DetailActivity extends AppCompatActivity {
                     picasso.load(R.drawable.filler).fit().into(mPoster);
                 }
             });
-            builder.build().load(movieData[0]).fit().into(mPoster);
-            mTitle.setText(movieData[1]);
-            mReleaseDate.setText("Release Date: " + movieData[2]);
+            builder.build().load(movie.imageURL).fit().into(mPoster);
+            mTitle.setText(movie.name);
+            mReleaseDate.setText("Release Date: " + movie.date);
 
-            if (movieData[3].matches("0")) {
+            if (movie.rating == 0) {
                 mRating.setText("No Rating");
-            } else mRating.setText("Rating: " + movieData[3] + "/10");
+            } else mRating.setText("Rating: " + Double.toString(movie.rating) + "/10");
 
-            if (movieData[4].matches("")){
+            if (movie.synopsis.matches("")){
                 mSynopsis.setText("No synopsis given.");
-            } else mSynopsis.setText(movieData[4]);
+            } else mSynopsis.setText(movie.synopsis);
         }
     }
 
@@ -55,5 +54,14 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         finish();
         return true;
+    }
+
+    class GetTrailersAndReviews extends AsyncTask<String[], Void, String>{
+
+        @Override
+        protected String doInBackground(String[]... urlStrings) {
+            return null;
+        }
+
     }
 }

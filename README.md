@@ -1,4 +1,4 @@
-# Popular-Movies-Stage-1
+# Popular-Movies-Stage-2
 
 API Key can be added in /app folder.
 

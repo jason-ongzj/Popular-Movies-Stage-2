@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,50 +12,29 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
+
 public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapter.ImageDisplayAdapterViewHolder>{
-    private String[] mMovieImageResults;
-    private String[] mMovieTitles;
-    private String[] mReleaseDates;
-    private String[] mSynopsis;
-    private String[] mVoteAverage;
+
+    private ArrayList<Movie> mMovies;
     private Context context;
-    private int imageWidth = 0;
-    private int imageHeight = 0;
 
     final private ImageDisplayAdapterOnClickHandler mClickHandler;
 
     public interface ImageDisplayAdapterOnClickHandler{
-        //Pass movie data array
-        void onDisplayImageClicked(String[] movieData);
+        //Pass movie object instance
+        void onDisplayImageClicked(Movie movie);
+    }
+
+    public void setMovies(ArrayList<Movie> movies) {
+        mMovies = movies;
+        notifyDataSetChanged();
     }
 
     public ImageDisplayAdapter(ImageDisplayAdapterOnClickHandler clickHandler){
         mClickHandler = clickHandler;
-    }
-
-    public void setImageData(String[] imageData){
-        mMovieImageResults = imageData;
-        notifyDataSetChanged();
-    }
-
-    public void setTitle(String[] titles){
-        mMovieTitles = titles;
-        notifyDataSetChanged();
-    }
-
-    public void setReleaseDates(String[] releaseDates){
-        mReleaseDates = releaseDates;
-        notifyDataSetChanged();
-    }
-
-    public void setSynopsis(String[] synopses){
-        mSynopsis = synopses;
-        notifyDataSetChanged();
-    }
-
-    public void setVoteAverage(String[] voteAverages){
-        mVoteAverage = voteAverages;
-        notifyDataSetChanged();
     }
 
     public class ImageDisplayAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -68,22 +48,15 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(context, mMovieTitles[getAdapterPosition()], Toast.LENGTH_SHORT).show();
-            if (mMovieTitles != null)
-                mClickHandler.onDisplayImageClicked(returnMovieData());
+            Toast.makeText(context, mMovies.get(getAdapterPosition()).name, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onClick: " + mMovies.size());
+            if (mMovies != null)
+                mClickHandler.onDisplayImageClicked(returnMovie());
         }
 
         // Pass data through onClick listener to intent
-        private String[] returnMovieData(){
-            String[] movieData = new String[5];
-
-            movieData[0] = mMovieImageResults[getAdapterPosition()];
-            movieData[1] = mMovieTitles[getAdapterPosition()];
-            movieData[2] = mReleaseDates[getAdapterPosition()];
-            movieData[3] = mVoteAverage[getAdapterPosition()];
-            movieData[4] = mSynopsis[getAdapterPosition()];
-
-            return movieData;
+        private Movie returnMovie(){
+            return mMovies.get(getAdapterPosition());
         }
     }
 
@@ -98,7 +71,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
     @Override
     public void onBindViewHolder(final ImageDisplayAdapterViewHolder holder, int position) {
-        String imageForMovie = mMovieImageResults[position];
+        String imageForMovie = mMovies.get(position).imageURL;
         holder.mImageDisplay.setVisibility(View.VISIBLE);
         Picasso.Builder builder = new Picasso.Builder(context);
         builder.listener(new Picasso.Listener(){
@@ -108,13 +81,12 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
             }
         });
         builder.build().load(imageForMovie).fit().into(holder.mImageDisplay);
-
     }
 
     @Override
     public int getItemCount() {
-        if (null == mMovieImageResults) return 0;
-        return mMovieImageResults.length;
+        if (mMovies == null) return 0;
+        return mMovies.size();
     }
 
     public void setContext(Context mainContext){
