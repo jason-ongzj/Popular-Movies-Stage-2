@@ -29,7 +29,7 @@ public class MovieDataBaseUtils {
 
                 String title = movieJSON.getString("title");
 
-                int id = movieJSON.getInt("id");
+                Long id = movieJSON.getLong("id");
 
                 String synopsis = movieJSON.getString("overview");
 
@@ -45,6 +45,20 @@ public class MovieDataBaseUtils {
 
             }
             return movieArrayList;
+        }
+        return null;
+    }
+
+    public static String[] getReviewsFromJSON(String response) throws JSONException {
+        JSONArray movieResultsJSON = getResults(response);
+        if (movieResultsJSON != null) {
+            String[] reviewList = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movieJSON = movieResultsJSON.getJSONObject(i);
+                String review = movieJSON.getString("content");
+                reviewList[i] = review;
+            }
+            return reviewList;
         }
         return null;
     }

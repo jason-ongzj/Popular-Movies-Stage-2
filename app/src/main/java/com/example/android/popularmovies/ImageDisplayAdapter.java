@@ -1,7 +1,6 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -73,14 +72,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
     public void onBindViewHolder(final ImageDisplayAdapterViewHolder holder, int position) {
         String imageForMovie = mMovies.get(position).imageURL;
         holder.mImageDisplay.setVisibility(View.VISIBLE);
-        Picasso.Builder builder = new Picasso.Builder(context);
-        builder.listener(new Picasso.Listener(){
-            @Override
-            public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                picasso.load(R.drawable.filler).fit().into(holder.mImageDisplay);
-            }
-        });
-        builder.build().load(imageForMovie).fit().into(holder.mImageDisplay);
+        Picasso.with(context).load(imageForMovie).fit().into(holder.mImageDisplay);
     }
 
     @Override

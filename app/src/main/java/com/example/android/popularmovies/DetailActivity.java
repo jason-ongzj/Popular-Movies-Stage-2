@@ -1,17 +1,35 @@
 package com.example.android.popularmovies;
 
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.utils.MovieDataBaseUtils;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity {
     public static final String TAG = "DetailActivity";
+    private Movie mMovie;
+    private String[] mReviews;
+    private ArrayAdapter<String> mReviewAdapter;
+    private String[] mTrailerURLs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +42,9 @@ public class DetailActivity extends AppCompatActivity {
         TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
         TextView mTitle = (TextView) findViewById(R.id.Title);
 
-        Movie movie = getIntent().getExtras().getParcelable("Movie");
-        if(movie != null){
+        mMovie = getIntent().getExtras().getParcelable("Movie");
+        Log.d(TAG, "onCreate: " + mMovie.id);
+        if(mMovie != null){
             Log.d(TAG, "onCreate: Intent started");
 
             // 1 - imageURL, 2 - title, 3 - release date, 4 - rating, 5 - synopsis
@@ -36,17 +55,19 @@ public class DetailActivity extends AppCompatActivity {
                     picasso.load(R.drawable.filler).fit().into(mPoster);
                 }
             });
-            builder.build().load(movie.imageURL).fit().into(mPoster);
-            mTitle.setText(movie.name);
-            mReleaseDate.setText("Release Date: " + movie.date);
+            builder.build().load(mMovie.imageURL).fit().into(mPoster);
+            mTitle.setText(mMovie.name);
+            mReleaseDate.setText("Release Date: " + mMovie.date);
 
-            if (movie.rating == 0) {
+            if (mMovie.rating == 0) {
                 mRating.setText("No Rating");
-            } else mRating.setText("Rating: " + Double.toString(movie.rating) + "/10");
+            } else mRating.setText("Rating: " + Double.toString(mMovie.rating) + "/10");
 
-            if (movie.synopsis.matches("")){
+            if (mMovie.synopsis.matches("")){
                 mSynopsis.setText("No synopsis given.");
-            } else mSynopsis.setText(movie.synopsis);
+            } else mSynopsis.setText(mMovie.synopsis);
+
+            new GetTrailersAndReviews().execute(BuildConfig.MOVIES_DB_API_KEY);
         }
     }
 
@@ -56,12 +77,90 @@ public class DetailActivity extends AppCompatActivity {
         return true;
     }
 
-    class GetTrailersAndReviews extends AsyncTask<String[], Void, String>{
+    class GetTrailersAndReviews extends AsyncTask<String, Void, String> {
+
+        public static final String REQUEST_METHOD = "GET";
+        public static final int READ_TIMEOUT = 15000;
+        public static final int CONNECTION_TIMEOUT = 15000;
 
         @Override
-        protected String doInBackground(String[]... urlStrings) {
+        protected String doInBackground(String... apiKey) {
+            Log.d(TAG, "doInBackground: DetailActivity");
+            String urlString = "https://api.themoviedb.org/3/movie/";
+            HttpURLConnection urlConnection = null;
+            try {
+                URL url = new URL(urlString + Long.toString(mMovie.id) + "/reviews?&api_key=" + apiKey[0]);
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                urlConnection.setRequestMethod(REQUEST_METHOD);
+                urlConnection.setReadTimeout(READ_TIMEOUT);
+                urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
+                int response = urlConnection.getResponseCode();
+//                Log.d(TAG, "doInBackground: The response code was " + response);
+
+                urlConnection.connect();
+
+                InputStreamReader streamReader = new InputStreamReader(urlConnection.getInputStream());
+                BufferedReader bufferedReader = new BufferedReader(streamReader);
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+                bufferedReader.close();
+                streamReader.close();
+//
+//                Log.d(TAG, "doInBackground: " + stringBuilder.toString());
+
+                return stringBuilder.toString();
+
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+            finally {
+                if(urlConnection != null){
+                    urlConnection.disconnect();
+                }
+            }
             return null;
         }
 
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try {
+                mReviews = MovieDataBaseUtils.getReviewsFromJSON(s);
+                if (mReviews.length != 0) {
+//                    Log.d(TAG, "onPostExecute: " + mReviews[0]);
+                    LinearLayout linearlayout = (LinearLayout) findViewById(R.id.review_layout);
+                    for (int i = 0; i < mReviews.length; i++){
+                        TextView reviewText = new TextView(DetailActivity.this);
+                        reviewText.setText(mReviews[i]);
+                        reviewText.setTextSize(16);
+                        reviewText.setPadding(0,32,0,32);
+                        reviewText.setTextColor(Color.WHITE);
+
+                        View view = new View(DetailActivity.this);
+                        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3);
+//                        view.setMinimumHeight(3);
+                        view.setLayoutParams(layoutParams);
+                        view.setBackgroundColor(Color.WHITE);
+                        view.setPadding(8,8,8,8);
+                        linearlayout.addView(reviewText);
+                        if (i != mReviews.length - 1)
+                            linearlayout.addView(view);
+                    }
+                }
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LinearLayout linearlayout = (LinearLayout) findViewById(R.id.review_layout);
+        linearlayout.removeAllViewsInLayout();
     }
 }

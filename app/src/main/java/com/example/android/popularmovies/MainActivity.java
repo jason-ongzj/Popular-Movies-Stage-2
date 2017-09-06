@@ -75,12 +75,12 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         switch(id) {
             case R.id.most_popular:
                 DISPLAY_STATE = 0;
-                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+//                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
                 displayOnRequest();
                 return true;
             case R.id.top_rated:
                 DISPLAY_STATE = 1;
-                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+//                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
                 displayOnRequest();
         }
         return super.onOptionsItemSelected(item);
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         super.onSaveInstanceState(outState);
         savedRecyclerLayoutState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, savedRecyclerLayoutState);
-        Log.d(TAG, "onSaveInstanceState: Saving recycler view");
+//        Log.d(TAG, "onSaveInstanceState: Saving recycler view");
     }
 
     @Override
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
-        Log.d(TAG, "onRestoreInstanceState: Restoring recycler view");
+//        Log.d(TAG, "onRestoreInstanceState: Restoring recycler view");
     }
 
     // Pass data through a single string array into intent
@@ -112,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
         Intent intent = new Intent(this, destinationActivity);
         intent.putExtra("Movie", movieData);
         startActivity(intent);
+//        Log.d(TAG, "onDisplayImageClicked: " + movieData.date);
+//        Log.d(TAG, "onDisplayImageClicked: " + movieData.synopsis);
     }
 
     private boolean displayOnRequest(){
@@ -173,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 urlConnection.setReadTimeout(READ_TIMEOUT);
                 urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
                 int response = urlConnection.getResponseCode();
-                Log.d(TAG, "doInBackground: The response code was " + response);
+//                Log.d(TAG, "doInBackground: The response code was " + response);
 
                 urlConnection.connect();
 
@@ -187,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 bufferedReader.close();
                 streamReader.close();
 
-                Log.d(TAG, "doInBackground: " + MovieDataBaseUtils.getResults(stringBuilder.toString()));
+//                Log.d(TAG, "doInBackground: " + MovieDataBaseUtils.getResults(stringBuilder.toString()));
 
                 return stringBuilder.toString();
 
@@ -207,6 +209,8 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 if (movieResults != null) {
                 // Set data to be retrieved when DetailActivity is called
                     mImageDisplayAdapter.setMovies(MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults));
+
+//                    Log.d(TAG, "onPostExecute: " + MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults).get(3).date);
                     showMovieCatalogue();
                 }
             } catch (JSONException e){
