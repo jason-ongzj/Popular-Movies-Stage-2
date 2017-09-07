@@ -93,13 +93,21 @@ public class MainActivity extends AppCompatActivity implements
 
         mCustomCursorAdapter = new CustomCursorAdapter(this, this);
 
-        mRecyclerView.setAdapter(mImageDisplayAdapter);
+        if (DISPLAY_STATE != 2)
+            mRecyclerView.setAdapter(mImageDisplayAdapter);
+        else mRecyclerView.setAdapter(mCustomCursorAdapter);
 
         mRecyclerView.setHasFixedSize(true);
 
         displayOnRequest();
 
         getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
     }
 
     @Override
@@ -132,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements
                 DISPLAY_STATE = 2;
                 getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
                 mRecyclerView.setAdapter(mCustomCursorAdapter);
+                showMovieCatalogue();
                 Log.d(TAG, "onOptionsItemSelected: ");
                 return true;
         }

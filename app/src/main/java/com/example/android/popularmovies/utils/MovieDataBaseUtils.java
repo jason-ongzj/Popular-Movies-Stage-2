@@ -64,4 +64,18 @@ public class MovieDataBaseUtils {
         }
         return null;
     }
+
+    public static String[] getVideosFromJSON(String response) throws JSONException {
+        JSONArray movieResultsJSON = getResults(response);
+        if (movieResultsJSON != null) {
+            String[] videoList = new String[movieResultsJSON.length()];
+            for (int i = 0; i < movieResultsJSON.length(); i++) {
+                JSONObject movieJSON = movieResultsJSON.getJSONObject(i);
+                String video = movieJSON.getString("key");
+                videoList[i] = video;
+            }
+            return videoList;
+        }
+        return null;
+    }
 }
