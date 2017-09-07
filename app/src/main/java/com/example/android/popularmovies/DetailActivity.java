@@ -49,6 +49,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView mReleaseDate = (TextView) findViewById(R.id.Release_Date);
         TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
         TextView mTitle = (TextView) findViewById(R.id.Title);
+        ToggleButton mToggle = (ToggleButton) findViewById(R.id.favorite);
 
         mMovie = getIntent().getExtras().getParcelable("Movie");
         Log.d(TAG, "onCreate: " + mMovie.id);
@@ -74,6 +75,13 @@ public class DetailActivity extends AppCompatActivity {
             if (mMovie.synopsis.matches("")){
                 mSynopsis.setText("No synopsis given.");
             } else mSynopsis.setText(mMovie.synopsis);
+
+            if(mMovie.favourite == Movie.TRUE) {
+                mToggle.setChecked(true);
+            } else {
+                mToggle.setChecked(false);
+            }
+
 
             new GetTrailersAndReviews().execute(BuildConfig.MOVIES_DB_API_KEY);
         }

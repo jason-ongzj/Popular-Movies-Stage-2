@@ -51,6 +51,7 @@ public class Movie implements Parcelable {
         dest.writeString(imageURL);
         dest.writeString(date);
         dest.writeDouble(rating);
+        dest.writeInt(favourite);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {

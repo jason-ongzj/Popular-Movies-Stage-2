@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ import static android.content.ContentValues.TAG;
 public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapter.ImageDisplayAdapterViewHolder>{
 
     private ArrayList<Movie> mMovies;
-    private Context context;
+    private Context mContext;
+    private Cursor mCursor;
 
     final private ImageDisplayAdapterOnClickHandler mClickHandler;
 
@@ -47,7 +50,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(context, mMovies.get(getAdapterPosition()).name, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, mMovies.get(getAdapterPosition()).name, Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onClick: " + mMovies.size());
             if (mMovies != null)
                 mClickHandler.onDisplayImageClicked(returnMovie());
@@ -55,6 +58,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
         // Pass data through onClick listener to intent
         private Movie returnMovie(){
+            mMovies.get(getAdapterPosition()).favourite = queryMovieInSQLDb(mMovies.get(getAdapterPosition()));
             return mMovies.get(getAdapterPosition());
         }
     }
@@ -62,7 +66,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
     @Override
     public ImageDisplayAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutIdForImageDisplayItem = R.layout.image_display_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
 
         View view = inflater.inflate(layoutIdForImageDisplayItem, parent, false);
         return new ImageDisplayAdapterViewHolder(view);
@@ -70,9 +74,9 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
     @Override
     public void onBindViewHolder(final ImageDisplayAdapterViewHolder holder, int position) {
-        String imageForMovie = mMovies.get(position).imageURL;
+        String imageURL = mMovies.get(position).imageURL;
         holder.mImageDisplay.setVisibility(View.VISIBLE);
-        Picasso.with(context).load(imageForMovie).fit().into(holder.mImageDisplay);
+        Picasso.with(mContext).load(imageURL).fit().into(holder.mImageDisplay);
     }
 
     @Override
@@ -81,8 +85,25 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
         return mMovies.size();
     }
 
-    public void setContext(Context mainContext){
-        context = mainContext;
+    public void setContext(Context context){
+        mContext = context;
     }
 
+    public int queryMovieInSQLDb(Movie movie){
+//        Uri movieUri = MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(movie.id)).build();
+        Cursor c = mContext.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                "movie_id=?",
+                new String[] {Long.toString(movie.id)},
+                null);
+
+        if (c.getCount() > 0) {
+            c.close();
+            return Movie.TRUE;
+        } else {
+            c.close();
+            return Movie.FALSE;
+        }
+    }
 }

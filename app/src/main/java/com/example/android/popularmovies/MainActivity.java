@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements
                 DISPLAY_STATE = 1;
 //                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
                 displayOnRequest();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -138,11 +139,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     // Pass data through a single string array into intent
+
     @Override
-    public void onDisplayImageClicked(Movie movieData) {
+    public void onDisplayImageClicked(Movie movie) {
         Class destinationActivity = DetailActivity.class;
+//        movie.favourite = mImageDisplayAdapter.queryMovieInSQLDb(movie);
+        Log.d(TAG, "onDisplayImageClicked: " + movie.favourite);
         Intent intent = new Intent(this, destinationActivity);
-        intent.putExtra("Movie", movieData);
+        intent.putExtra("Movie", movie);
         startActivity(intent);
 //        Log.d(TAG, "onDisplayImageClicked: " + movieData.date);
 //        Log.d(TAG, "onDisplayImageClicked: " + movieData.synopsis);

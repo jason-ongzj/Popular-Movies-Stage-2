@@ -168,8 +168,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/favourite_toggle_selector"
-                android:textOff="Mark As Favorite"
-                android:textOn="Favorited"
+                android:textOff="Mark As Favourite"
+                android:textOn="Favourited"
                 android:onClick="onToggleClicked"/>
 
         </LinearLayout>
