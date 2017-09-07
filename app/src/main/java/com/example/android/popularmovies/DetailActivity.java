@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentValues;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,7 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.utils.MovieDataBaseUtils;
 import com.squareup.picasso.Picasso;
 
@@ -24,8 +28,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.example.android.popularmovies.R.dimen.dimen_16;
+
 public class DetailActivity extends AppCompatActivity {
     public static final String TAG = "DetailActivity";
+    private static final int TRUE = 1;
+    private static final int FALSE = 0;
     private Movie mMovie;
     private String[] mReviews;
     private ArrayAdapter<String> mReviewAdapter;
@@ -137,15 +145,14 @@ public class DetailActivity extends AppCompatActivity {
                         TextView reviewText = new TextView(DetailActivity.this);
                         reviewText.setText(mReviews[i]);
                         reviewText.setTextSize(16);
-                        reviewText.setPadding(0,32,0,32);
+                        int dimen_8 = getResources().getDimensionPixelSize(dimen_16);
+                        reviewText.setPadding(0,dimen_8,0,dimen_8);
                         reviewText.setTextColor(Color.WHITE);
 
                         View view = new View(DetailActivity.this);
                         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3);
-//                        view.setMinimumHeight(3);
                         view.setLayoutParams(layoutParams);
                         view.setBackgroundColor(Color.WHITE);
-                        view.setPadding(8,8,8,8);
                         linearlayout.addView(reviewText);
                         if (i != mReviews.length - 1)
                             linearlayout.addView(view);
@@ -157,10 +164,29 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LinearLayout linearlayout = (LinearLayout) findViewById(R.id.review_layout);
-        linearlayout.removeAllViewsInLayout();
+    public void onToggleClicked(View view){
+        Log.d(TAG, "onToggleClicked: ");
+        boolean on = ((ToggleButton) view).isChecked();
+
+        if (on){
+            ContentValues contentValues = new ContentValues();
+
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovie.id);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE, mMovie.name);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_IMAGE_URL, mMovie.imageURL);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_SYNOPSIS, mMovie.synopsis);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, mMovie.date);
+            contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING, mMovie.rating);
+
+            Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+            mMovie.favourite = TRUE;
+        } else {
+            Uri uri = MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(mMovie.id)).build();
+            getContentResolver().delete(uri, null, null);
+            Toast.makeText(getBaseContext(), "Deleted " + mMovie.name, Toast.LENGTH_SHORT).show();
+            mMovie.favourite = FALSE;
+        }
+        
     }
 }

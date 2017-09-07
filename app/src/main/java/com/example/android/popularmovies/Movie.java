@@ -8,20 +8,24 @@ import android.os.Parcelable;
  */
 
 public class Movie implements Parcelable {
+    public static final int TRUE = 1;
+    public static final int FALSE = 0;
     String name;
     long id;
     String synopsis;
     String imageURL;
     String date;
     Double rating;
+    int favourite; // 0 - false, 1 - true
 
-    public Movie(String name, long id, String synopsis, String imageURL, String date, Double rating){
+    public Movie(String name, long id, String synopsis, String imageURL, String date, Double rating, int favourite){
         this.name = name;
         this.id = id;
         this.synopsis = synopsis;
         this.imageURL = imageURL;
         this.date = date;
         this.rating = rating;
+        this.favourite = favourite;
     }
 
     public Movie(Parcel in){
@@ -31,6 +35,7 @@ public class Movie implements Parcelable {
         this.imageURL = in.readString();
         this.date = in.readString();
         this.rating = in.readDouble();
+        this.favourite = in.readInt();
     }
 
     @Override

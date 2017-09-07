@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 public class MovieDataBaseUtils {
 
+    private static final int FALSE = 0;
+
     public static JSONArray getResults(String response){
         try {
             JSONObject movieJSON = new JSONObject(response);
@@ -40,7 +42,7 @@ public class MovieDataBaseUtils {
 
                 Double voteAverage = movieJSON.getDouble("vote_average");
 
-                Movie movie = new Movie(title, id, synopsis, imageUrl, date, voteAverage);
+                Movie movie = new Movie(title, id, synopsis, imageUrl, date, voteAverage, Movie.FALSE);
                 movieArrayList.add(i, movie);
 
             }

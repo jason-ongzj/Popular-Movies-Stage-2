@@ -1,13 +1,17 @@
 package com.example.android.popularmovies;
 
-
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +22,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.utils.MovieDataBaseUtils;
+
 import org.json.JSONException;
 
 import java.io.BufferedReader;
@@ -27,7 +33,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity implements ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler{
+public class MainActivity extends AppCompatActivity implements
+        ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<Cursor>{
     private static final String TAG = "MainActivity";
     private TextView mErrorDisplay;
     private ImageDisplayAdapter mImageDisplayAdapter;
@@ -39,6 +47,30 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
 
     private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
     private Parcelable savedRecyclerLayoutState;
+
+    // Data columns for display of movie data
+
+    public static final String[] MAIN_MOVIE_PROJECTION = {
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry.COLUMN_MOVIE,
+            MovieContract.MovieEntry.COLUMN_MOVIE_IMAGE_URL,
+            MovieContract.MovieEntry.COLUMN_MOVIE_SYNOPSIS,
+            MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+            MovieContract.MovieEntry.COLUMN_MOVIE_RATING
+    };
+
+    // Index values of array of strings to be accessed. Index values must
+    // match above order for column data
+
+    public static final int INDEX_MOVIE_ID = 0;
+    public static final int INDEX_MOVIE_NAME = 1;
+    public static final int INDEX_MOVIE_IMAGE_URL = 2;
+    public static final int INDEX_MOVIE_SYNOPSIS = 3;
+    public static final int INDEX_MOVIE_RELEASE_DATE = 4;
+    public static final int INDEX_MOVIE_RATING = 5;
+
+    // ID to be used for identifying loader responsible for loading movie data
+    private static final int ID_MOVIE_LOADER = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,5 +249,33 @@ public class MainActivity extends AppCompatActivity implements ImageDisplayAdapt
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "onCreateLoader: CursorID " + id + " loaded");
+        switch (id) {
+            case ID_MOVIE_LOADER:
+                Uri movieQueryUri = MovieContract.MovieEntry.CONTENT_URI;
+
+                return new CursorLoader(this,
+                        movieQueryUri,
+                        MAIN_MOVIE_PROJECTION,
+                        null,
+                        null,
+                        null);
+            default:
+                throw new RuntimeException("Loader not implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }

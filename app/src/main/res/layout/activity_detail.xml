@@ -13,6 +13,17 @@
         android:background="@android:color/black"
         tools:context="com.example.android.popularmovies.DetailActivity">
 
+        <View
+            android:id="@+id/view2"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_margin="8dp"
+            android:background="@android:color/background_light"
+            android:visibility="visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Review" />
+
         <ImageView
             android:id="@+id/Poster"
             android:layout_width="148dp"
@@ -79,15 +90,16 @@
 
         <LinearLayout
             android:id="@+id/review_layout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:isScrollContainer="false"
             android:orientation="vertical"
-            android:padding="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/Synopsis" />
+            app:layout_constraintTop_toBottomOf="@+id/view2" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/linearLayout2"
@@ -151,7 +163,34 @@
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="312dp" />
 
+            <ToggleButton
+                android:id="@+id/favorite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/favourite_toggle_selector"
+                android:textOff="Mark As Favorite"
+                android:textOn="Favorited"
+                android:onClick="onToggleClicked"/>
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/Review"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/review"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Synopsis"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

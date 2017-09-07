@@ -26,6 +26,14 @@ public class MovieContract {
         public static final String COLUMN_MOVIE = "movie_name";
 
         public static final String COLUMN_MOVIE_ID = "movie_id";
+
+        public static final String COLUMN_MOVIE_SYNOPSIS = "synopsis";
+
+        public static final String COLUMN_MOVIE_IMAGE_URL = "imageURL";
+
+        public static final String COLUMN_MOVIE_RELEASE_DATE = "release_date";
+
+        public static final String COLUMN_MOVIE_RATING = "rating";
     }
 }
 
