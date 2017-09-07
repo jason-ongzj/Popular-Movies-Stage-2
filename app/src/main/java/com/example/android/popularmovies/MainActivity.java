@@ -35,10 +35,12 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements
         ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler,
+        CustomCursorAdapter.CustomCursorAdapterOnClickHandler,
         LoaderManager.LoaderCallbacks<Cursor>{
     private static final String TAG = "MainActivity";
     private TextView mErrorDisplay;
     private ImageDisplayAdapter mImageDisplayAdapter;
+    private CustomCursorAdapter mCustomCursorAdapter;
     private RecyclerView mRecyclerView;
     private static int DISPLAY_STATE = 0;
 
@@ -86,11 +88,15 @@ public class MainActivity extends AppCompatActivity implements
         mImageDisplayAdapter = new ImageDisplayAdapter(this);
         mImageDisplayAdapter.setContext(this);
 
+        mCustomCursorAdapter = new CustomCursorAdapter(this, this);
+
         mRecyclerView.setAdapter(mImageDisplayAdapter);
 
         mRecyclerView.setHasFixedSize(true);
 
         displayOnRequest();
+
+        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
     }
 
     @Override
@@ -107,13 +113,23 @@ public class MainActivity extends AppCompatActivity implements
         switch(id) {
             case R.id.most_popular:
                 DISPLAY_STATE = 0;
-//                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+                if (mRecyclerView.getAdapter() != mImageDisplayAdapter){
+                    mRecyclerView.setAdapter(mImageDisplayAdapter);
+                }
                 displayOnRequest();
                 return true;
             case R.id.top_rated:
                 DISPLAY_STATE = 1;
-//                Log.d(TAG, "onOptionsItemSelected: State " + DISPLAY_STATE);
+                if (mRecyclerView.getAdapter() != mImageDisplayAdapter){
+                    mRecyclerView.setAdapter(mImageDisplayAdapter);
+                }
                 displayOnRequest();
+                return true;
+            case R.id.favourites:
+                DISPLAY_STATE = 2;
+                mRecyclerView.setAdapter(mCustomCursorAdapter);
+                showMovieCatalogue();
+                Log.d(TAG, "onOptionsItemSelected: ");
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -124,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
         savedRecyclerLayoutState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, savedRecyclerLayoutState);
-//        Log.d(TAG, "onSaveInstanceState: Saving recycler view");
     }
 
     @Override
@@ -135,21 +150,23 @@ public class MainActivity extends AppCompatActivity implements
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
-//        Log.d(TAG, "onRestoreInstanceState: Restoring recycler view");
     }
-
-    // Pass data through a single string array into intent
 
     @Override
     public void onDisplayImageClicked(Movie movie) {
         Class destinationActivity = DetailActivity.class;
-//        movie.favourite = mImageDisplayAdapter.queryMovieInSQLDb(movie);
         Log.d(TAG, "onDisplayImageClicked: " + movie.favourite);
         Intent intent = new Intent(this, destinationActivity);
         intent.putExtra("Movie", movie);
         startActivity(intent);
-//        Log.d(TAG, "onDisplayImageClicked: " + movieData.date);
-//        Log.d(TAG, "onDisplayImageClicked: " + movieData.synopsis);
+    }
+
+    @Override
+    public void onCustomCursorAdapterImageClicked(Movie movie) {
+        Class destinationActivity = DetailActivity.class;
+        Intent intent = new Intent(this, destinationActivity);
+        intent.putExtra("Movie", movie);
+        startActivity(intent);
     }
 
     private boolean displayOnRequest(){
@@ -275,11 +292,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
+        mCustomCursorAdapter.setCursor(data);
+        Log.d(TAG, "onLoadFinished: Cursor set CustomCursorAdapter");
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        mCustomCursorAdapter.setCursor(null);
     }
 }

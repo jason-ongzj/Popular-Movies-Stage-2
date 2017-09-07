@@ -82,7 +82,6 @@ public class DetailActivity extends AppCompatActivity {
                 mToggle.setChecked(false);
             }
 
-
             new GetTrailersAndReviews().execute(BuildConfig.MOVIES_DB_API_KEY);
         }
     }
@@ -125,7 +124,6 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 bufferedReader.close();
                 streamReader.close();
-//
 //                Log.d(TAG, "doInBackground: " + stringBuilder.toString());
 
                 return stringBuilder.toString();
