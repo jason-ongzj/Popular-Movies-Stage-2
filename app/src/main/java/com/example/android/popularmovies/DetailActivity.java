@@ -6,10 +6,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,7 +36,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final int FALSE = 0;
     private Movie mMovie;
     private String[] mReviews;
-    private ArrayAdapter<String> mReviewAdapter;
+    private RecyclerView mRecyclerView;
     private String[] mTrailerURLs;
 
     @Override
@@ -50,6 +50,7 @@ public class DetailActivity extends AppCompatActivity {
         TextView mSynopsis = (TextView) findViewById(R.id.Synopsis);
         TextView mTitle = (TextView) findViewById(R.id.Title);
         ToggleButton mToggle = (ToggleButton) findViewById(R.id.favorite);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_cursor);
 
         mMovie = getIntent().getExtras().getParcelable("Movie");
         Log.d(TAG, "onCreate: " + mMovie.id);
@@ -193,6 +194,8 @@ public class DetailActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), "Deleted " + mMovie.name, Toast.LENGTH_SHORT).show();
             mMovie.favourite = FALSE;
         }
-        
+
     }
+
+
 }

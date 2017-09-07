@@ -37,11 +37,14 @@ public class MainActivity extends AppCompatActivity implements
         ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler,
         CustomCursorAdapter.CustomCursorAdapterOnClickHandler,
         LoaderManager.LoaderCallbacks<Cursor>{
+
     private static final String TAG = "MainActivity";
+
     private TextView mErrorDisplay;
     private ImageDisplayAdapter mImageDisplayAdapter;
     private CustomCursorAdapter mCustomCursorAdapter;
     private RecyclerView mRecyclerView;
+
     private static int DISPLAY_STATE = 0;
 
     // Make your own api_key.properties file in /app folder. Variable name myAPI_Key
@@ -82,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements
         mErrorDisplay = (TextView) findViewById(R.id.error_display);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_display);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
+        GridLayoutManager layoutManager_display = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager_display);
 
         mImageDisplayAdapter = new ImageDisplayAdapter(this);
         mImageDisplayAdapter.setContext(this);
@@ -113,22 +116,22 @@ public class MainActivity extends AppCompatActivity implements
         switch(id) {
             case R.id.most_popular:
                 DISPLAY_STATE = 0;
-                if (mRecyclerView.getAdapter() != mImageDisplayAdapter){
+                if (mRecyclerView.getAdapter() != mImageDisplayAdapter) {
                     mRecyclerView.setAdapter(mImageDisplayAdapter);
                 }
                 displayOnRequest();
                 return true;
             case R.id.top_rated:
                 DISPLAY_STATE = 1;
-                if (mRecyclerView.getAdapter() != mImageDisplayAdapter){
+                if (mRecyclerView.getAdapter() != mImageDisplayAdapter) {
                     mRecyclerView.setAdapter(mImageDisplayAdapter);
                 }
                 displayOnRequest();
                 return true;
             case R.id.favourites:
                 DISPLAY_STATE = 2;
+                getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
                 mRecyclerView.setAdapter(mCustomCursorAdapter);
-                showMovieCatalogue();
                 Log.d(TAG, "onOptionsItemSelected: ");
                 return true;
         }
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements
         mErrorDisplay.setVisibility(View.INVISIBLE);
     }
 
-    class RetrieveFeedTask extends AsyncTask<String, Void, String> {
+    private class RetrieveFeedTask extends AsyncTask<String, Void, String> {
         private static final String TAG = "AsyncTask";
         public static final String REQUEST_METHOD = "GET";
         public static final int READ_TIMEOUT = 15000;
@@ -242,8 +245,6 @@ public class MainActivity extends AppCompatActivity implements
                 bufferedReader.close();
                 streamReader.close();
 
-//                Log.d(TAG, "doInBackground: " + MovieDataBaseUtils.getResults(stringBuilder.toString()));
-
                 return stringBuilder.toString();
 
             } catch(IOException e) {
@@ -262,8 +263,6 @@ public class MainActivity extends AppCompatActivity implements
                 if (movieResults != null) {
                 // Set data to be retrieved when DetailActivity is called
                     mImageDisplayAdapter.setMovies(MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults));
-
-//                    Log.d(TAG, "onPostExecute: " + MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults).get(3).date);
                     showMovieCatalogue();
                 }
             } catch (JSONException e){
