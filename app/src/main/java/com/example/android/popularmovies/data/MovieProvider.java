@@ -10,19 +10,15 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-/**
- * Created by Ben on 9/6/2017.
- */
-
 public class MovieProvider extends ContentProvider {
 
-    public static final int CODE_MOVIE = 100;
-    public static final int CODE_MOVIE_WITH_ID = 101;
+    private static final int CODE_MOVIE = 100;
+    private static final int CODE_MOVIE_WITH_ID = 101;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mMovieDbHelper;
 
-    public static UriMatcher buildUriMatcher(){
+    private static UriMatcher buildUriMatcher(){
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
 

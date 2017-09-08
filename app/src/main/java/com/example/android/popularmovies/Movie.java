@@ -3,19 +3,15 @@ package com.example.android.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Ben on 9/5/2017.
- */
-
 public class Movie implements Parcelable {
     public static final int TRUE = 1;
     public static final int FALSE = 0;
-    String name;
-    long id;
-    String synopsis;
-    String imageURL;
-    String date;
-    Double rating;
+    final String name;
+    final long id;
+    final String synopsis;
+    final String imageURL;
+    final String date;
+    final Double rating;
     int favourite; // 0 - false, 1 - true
 
     public Movie(String name, long id, String synopsis, String imageURL, String date, Double rating, int favourite){
@@ -28,7 +24,7 @@ public class Movie implements Parcelable {
         this.favourite = favourite;
     }
 
-    public Movie(Parcel in){
+    private Movie(Parcel in){
         this.name = in.readString();
         this.id = in.readLong();
         this.synopsis = in.readString();

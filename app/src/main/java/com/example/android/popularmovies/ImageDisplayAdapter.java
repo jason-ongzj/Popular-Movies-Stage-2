@@ -21,7 +21,6 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
 
     private ArrayList<Movie> mMovies;
     private Context mContext;
-    private Cursor mCursor;
 
     final private ImageDisplayAdapterOnClickHandler mClickHandler;
 
@@ -89,8 +88,7 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
         mContext = context;
     }
 
-    public int queryMovieInSQLDb(Movie movie){
-//        Uri movieUri = MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(movie.id)).build();
+    private int queryMovieInSQLDb(Movie movie){
         Cursor c = mContext.getContentResolver().query(
                 MovieContract.MovieEntry.CONTENT_URI,
                 new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},

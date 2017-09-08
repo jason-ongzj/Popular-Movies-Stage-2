@@ -6,6 +6,10 @@
     <string name="poster">Poster</string>
     <string name="thumbnail">Thumbnail</string>
     <string name="check_internet_connection">Please enable your internet connection.</string>
-    <string name="review">Review</string>
+    <string name="review">Reviews</string>
     <string name="favourite_string">Favourites</string>
+    <string name="favourite_tag">Mark As Favourite</string>
+    <string name="favourited_tag">Favourited</string>
+    <string name="movie_trailers">Trailers</string>
+    <string name="example_text">TextView</string>
 </resources>

@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // Data columns for display of movie data
 
-    public static final String[] MAIN_MOVIE_PROJECTION = {
+    private static final String[] MAIN_MOVIE_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_ID,
             MovieContract.MovieEntry.COLUMN_MOVIE,
             MovieContract.MovieEntry.COLUMN_MOVIE_IMAGE_URL,
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        if (savedInstanceState == null){
+        if (savedInstanceState != null){
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
@@ -181,14 +181,12 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    private boolean displayOnRequest(){
+    private void displayOnRequest(){
         if(!isInternetConnected()){
             showDisplayError();
-            return false;
         } else {
             new RetrieveFeedTask().execute(api_key);
             showMovieCatalogue();
-            return true;
         }
     }
 
@@ -239,8 +237,6 @@ public class MainActivity extends AppCompatActivity implements
                 urlConnection.setRequestMethod(REQUEST_METHOD);
                 urlConnection.setReadTimeout(READ_TIMEOUT);
                 urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-                int response = urlConnection.getResponseCode();
-//                Log.d(TAG, "doInBackground: The response code was " + response);
 
                 urlConnection.connect();
 

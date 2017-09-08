@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,14 +28,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity {
-    public static final String TAG = "DetailActivity";
+    private static final String TAG = "DetailActivity";
     private static final int TRUE = 1;
     private static final int FALSE = 0;
     private Movie mMovie;
-    private String[] mReviews;
-    private String[] mTrailerURLs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,6 @@ public class DetailActivity extends AppCompatActivity {
         ToggleButton mToggle = (ToggleButton) findViewById(R.id.favorite);
 
         mMovie = getIntent().getExtras().getParcelable("Movie");
-        Log.d(TAG, "onCreate: " + mMovie.id);
         if(mMovie != null){
             Log.d(TAG, "onCreate: Intent started");
 
@@ -101,8 +100,6 @@ public class DetailActivity extends AppCompatActivity {
                 urlConnection.setRequestMethod(REQUEST_METHOD);
                 urlConnection.setReadTimeout(READ_TIMEOUT);
                 urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
-                int response = urlConnection.getResponseCode();
-//                Log.d(TAG, "doInBackground: The response code was " + response);
 
                 urlConnection.connect();
 
@@ -115,7 +112,6 @@ public class DetailActivity extends AppCompatActivity {
                 }
                 bufferedReader.close();
                 streamReader.close();
-//                Log.d(TAG, "doInBackground: " + stringBuilder.toString());
 
                 URL url_trailers = new URL(urlString + Long.toString(mMovie.id) + "/videos?&api_key=" + apiKey[0]);
                 trailer_urlConnection = (HttpURLConnection) url_trailers.openConnection();
@@ -149,6 +145,9 @@ public class DetailActivity extends AppCompatActivity {
                 if(urlConnection != null){
                     urlConnection.disconnect();
                 }
+                if(trailer_urlConnection != null){
+                    trailer_urlConnection.disconnect();
+                }
             }
             return null;
         }
@@ -157,10 +156,10 @@ public class DetailActivity extends AppCompatActivity {
         protected void onPostExecute(String[] s) {
             super.onPostExecute(s);
             try {
-                mReviews = MovieDataBaseUtils.getReviewsFromJSON(s[0]);
-                String[] mVideos = MovieDataBaseUtils.getVideosFromJSON(s[1]);
+                String [] mReviews = MovieDataBaseUtils.getReviewsFromJSON(s[0]);
+//                String[] mVideos = MovieDataBaseUtils.getVideosFromJSON(s[1]);
+                ArrayList<String> mVideos = MovieDataBaseUtils.getVideosFromJSON(s[1]);
                 if (mReviews.length != 0) {
-//                    Log.d(TAG, "onPostExecute: " + mReviews[0]);
                     LinearLayout linearlayout = (LinearLayout) findViewById(R.id.review_layout);
                     for (int i = 0; i < mReviews.length; i++){
                         TextView reviewText = new TextView(DetailActivity.this);
@@ -181,23 +180,32 @@ public class DetailActivity extends AppCompatActivity {
                 }
 
                 if(mVideos != null){
-                    Log.d(TAG, "onPostExecute: " + mVideos[0]);
-
                     LinearLayout linearLayout = (LinearLayout) findViewById(R.id.trailerLayout);
                     LayoutInflater layoutInflater = getLayoutInflater();
-                    for (int i = 0; i < mVideos.length; i++){
+                    for (int i = 0; i < mVideos.size(); i++){
+//                        if (mVideos[i] == "null") continue;
                         View child = layoutInflater.inflate(R.layout.trailers, null);
-                        TextView childTextView = (TextView) child.findViewById(R.id.trailer);
+                        ImageView trailer_play_button = (ImageView) child.findViewById(R.id.videoPlayButton);
+                        TextView trailer_textView = (TextView) child.findViewById(R.id.trailer);
+                        String videoLink = "https://www.youtube.com/watch?v=" + mVideos.get(i);
+                        final Uri videoUri = Uri.parse(videoLink);
                         int video_no = i + 1;
-                        childTextView.setText("Video " + video_no);
-                        childTextView.setOnClickListener(new View.OnClickListener(){
+                        trailer_textView.setText("Video " + video_no);
+                        trailer_play_button.setOnClickListener(new View.OnClickListener(){
                             public void onClick(View v){
-
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(videoUri);
+                                Log.d(TAG, "onClick: " + videoUri.toString());
+                                if (intent.resolveActivity(getPackageManager()) != null) {
+                                    startActivity(intent);
+                                } else {
+                                    Log.d(TAG, "Couldn't call " + videoUri.toString());
+                                }
                             }
                         });
+
                         linearLayout.addView(child);
                     }
-
                 }
             } catch (JSONException e){
                 e.printStackTrace();
@@ -219,8 +227,7 @@ public class DetailActivity extends AppCompatActivity {
             contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, mMovie.date);
             contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING, mMovie.rating);
 
-            Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_SHORT).show();
+            getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
             mMovie.favourite = TRUE;
         } else {
             Uri uri = MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(mMovie.id)).build();

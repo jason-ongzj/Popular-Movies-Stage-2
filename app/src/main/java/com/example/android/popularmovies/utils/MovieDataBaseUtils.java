@@ -10,9 +10,7 @@ import java.util.ArrayList;
 
 public class MovieDataBaseUtils {
 
-    private static final int FALSE = 0;
-
-    public static JSONArray getResults(String response){
+    private static JSONArray getResults(String response){
         try {
             JSONObject movieJSON = new JSONObject(response);
             return movieJSON.getJSONArray("results");
@@ -65,14 +63,21 @@ public class MovieDataBaseUtils {
         return null;
     }
 
-    public static String[] getVideosFromJSON(String response) throws JSONException {
+    public static ArrayList<String> getVideosFromJSON(String response) throws JSONException {
         JSONArray movieResultsJSON = getResults(response);
         if (movieResultsJSON != null) {
-            String[] videoList = new String[movieResultsJSON.length()];
+            int videoListNo = 0;
+//            String[] videoList = new String[movieResultsJSON.length()];
+            ArrayList<String> videoList = new ArrayList<String>();
             for (int i = 0; i < movieResultsJSON.length(); i++) {
                 JSONObject movieJSON = movieResultsJSON.getJSONObject(i);
-                String video = movieJSON.getString("key");
-                videoList[i] = video;
+                String type = movieJSON.getString("type");
+                String name = movieJSON.getString("name");
+                if (type.matches("Trailer")) {
+                    String video = movieJSON.getString("key");
+                    videoList.add(video);
+//                    videoListNo++;
+                }
             }
             return videoList;
         }

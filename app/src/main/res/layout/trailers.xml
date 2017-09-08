@@ -2,13 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Trailer_Layout"
     android:layout_width="match_parent"
     android:layout_height="75dp"
-    android:background="@android:color/black"
-    android:onClick="onVideoClicked">
+    android:background="@android:color/black">
 
-    <ImageButton
-        android:id="@+id/imageButton2"
+    <ImageView
+        android:id="@+id/videoPlayButton"
         style="@android:style/Widget.ImageButton"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -34,13 +34,12 @@
         android:background="@android:color/black"
         android:fontFamily="monospace"
         android:gravity="fill_vertical"
-        android:text="TextView"
-        android:textAlignment="textStart"
+        android:text="@string/example_text"
         android:textColor="@android:color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/imageButton2"
+        app:layout_constraintLeft_toRightOf="@+id/videoPlayButton"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />

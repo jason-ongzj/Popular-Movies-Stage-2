@@ -10,14 +10,10 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by Ben on 9/7/2017.
- */
-
 public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapter.CustomCursorAdapterViewHolder> {
 
     private Cursor mCursor;
-    private Context mContext;
+    private final Context mContext;
 
     final private CustomCursorAdapterOnClickHandler mClickHandler;
 
@@ -58,8 +54,7 @@ public class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapte
             String movie_date = mCursor.getString(MainActivity.INDEX_MOVIE_RELEASE_DATE);
             Double movie_rating = mCursor.getDouble(MainActivity.INDEX_MOVIE_RATING);
 
-            Movie movie = new Movie(movie_name, movie_id, movie_synopsis, movie_imageURL, movie_date, movie_rating, Movie.TRUE);
-            return movie;
+            return new Movie(movie_name, movie_id, movie_synopsis, movie_imageURL, movie_date, movie_rating, Movie.TRUE);
         }
     }
 
