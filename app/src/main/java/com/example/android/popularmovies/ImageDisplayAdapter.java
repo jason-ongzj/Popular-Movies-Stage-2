@@ -17,7 +17,8 @@ import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
-public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapter.ImageDisplayAdapterViewHolder>{
+public class ImageDisplayAdapter extends
+        RecyclerView.Adapter<ImageDisplayAdapter.ImageDisplayAdapterViewHolder>{
 
     private ArrayList<Movie> mMovies;
     private Context mContext;
@@ -34,11 +35,16 @@ public class ImageDisplayAdapter extends RecyclerView.Adapter<ImageDisplayAdapte
         notifyDataSetChanged();
     }
 
+    public ArrayList<Movie> getMovies() {
+        return mMovies;
+    }
+
     public ImageDisplayAdapter(ImageDisplayAdapterOnClickHandler clickHandler){
         mClickHandler = clickHandler;
     }
 
-    public class ImageDisplayAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ImageDisplayAdapterViewHolder extends RecyclerView.ViewHolder
+                implements View.OnClickListener{
         public final ImageView mImageDisplay;
 
         public ImageDisplayAdapterViewHolder(View view) {

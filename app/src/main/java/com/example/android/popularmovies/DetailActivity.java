@@ -36,6 +36,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final int FALSE = 0;
     private Movie mMovie;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,6 @@ public class DetailActivity extends AppCompatActivity {
 
         mMovie = getIntent().getExtras().getParcelable("Movie");
         if(mMovie != null){
-            Log.d(TAG, "onCreate: Intent started");
 
             // 1 - imageURL, 2 - title, 3 - release date, 4 - rating, 5 - synopsis
             Picasso.with(this).load(mMovie.imageURL).fit().into(mPoster);
@@ -73,6 +73,7 @@ public class DetailActivity extends AppCompatActivity {
 
             new GetTrailersAndReviews().execute(BuildConfig.MOVIES_DB_API_KEY);
         }
+        Log.d(TAG, "onCreate: ScrollView");
     }
 
     @Override
@@ -113,7 +114,8 @@ public class DetailActivity extends AppCompatActivity {
                 bufferedReader.close();
                 streamReader.close();
 
-                URL url_trailers = new URL(urlString + Long.toString(mMovie.id) + "/videos?&api_key=" + apiKey[0]);
+                URL url_trailers = new URL(urlString + Long.toString(mMovie.id) +
+                                "/videos?&api_key=" + apiKey[0]);
                 trailer_urlConnection = (HttpURLConnection) url_trailers.openConnection();
 
                 trailer_urlConnection.setRequestMethod(REQUEST_METHOD);
@@ -124,7 +126,8 @@ public class DetailActivity extends AppCompatActivity {
 
                 trailer_urlConnection.connect();
 
-                InputStreamReader streamReader_trailer = new InputStreamReader(trailer_urlConnection.getInputStream());
+                InputStreamReader streamReader_trailer =
+                        new InputStreamReader(trailer_urlConnection.getInputStream());
                 BufferedReader bufferedReader_trailer = new BufferedReader(streamReader_trailer);
                 StringBuilder stringBuilder_trailer = new StringBuilder();
                 String line_trailer;
@@ -157,7 +160,6 @@ public class DetailActivity extends AppCompatActivity {
             super.onPostExecute(s);
             try {
                 String [] mReviews = MovieDataBaseUtils.getReviewsFromJSON(s[0]);
-//                String[] mVideos = MovieDataBaseUtils.getVideosFromJSON(s[1]);
                 ArrayList<String> mVideos = MovieDataBaseUtils.getVideosFromJSON(s[1]);
                 if (mReviews.length != 0) {
                     LinearLayout linearlayout = (LinearLayout) findViewById(R.id.review_layout);
@@ -170,7 +172,8 @@ public class DetailActivity extends AppCompatActivity {
                         reviewText.setTextColor(Color.WHITE);
 
                         View view = new View(DetailActivity.this);
-                        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 3);
+                        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams
+                                (ViewGroup.LayoutParams.MATCH_PARENT, 3);
                         view.setLayoutParams(layoutParams);
                         view.setBackgroundColor(Color.WHITE);
                         linearlayout.addView(reviewText);
@@ -183,7 +186,6 @@ public class DetailActivity extends AppCompatActivity {
                     LinearLayout linearLayout = (LinearLayout) findViewById(R.id.trailerLayout);
                     LayoutInflater layoutInflater = getLayoutInflater();
                     for (int i = 0; i < mVideos.size(); i++){
-//                        if (mVideos[i] == "null") continue;
                         View child = layoutInflater.inflate(R.layout.trailers, null);
                         ImageView trailer_play_button = (ImageView) child.findViewById(R.id.videoPlayButton);
                         TextView trailer_textView = (TextView) child.findViewById(R.id.trailer);
@@ -203,13 +205,13 @@ public class DetailActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
                         linearLayout.addView(child);
                     }
                 }
             } catch (JSONException e){
                 e.printStackTrace();
             }
+
         }
     }
 
@@ -230,11 +232,12 @@ public class DetailActivity extends AppCompatActivity {
             getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
             mMovie.favourite = TRUE;
         } else {
-            Uri uri = MovieContract.MovieEntry.CONTENT_URI.buildUpon().appendPath(Long.toString(mMovie.id)).build();
+            Uri uri = MovieContract.MovieEntry.CONTENT_URI.buildUpon()
+                        .appendPath(Long.toString(mMovie.id))
+                        .build();
             getContentResolver().delete(uri, null, null);
             Toast.makeText(getBaseContext(), "Deleted " + mMovie.name, Toast.LENGTH_SHORT).show();
             mMovie.favourite = FALSE;
         }
-
     }
 }

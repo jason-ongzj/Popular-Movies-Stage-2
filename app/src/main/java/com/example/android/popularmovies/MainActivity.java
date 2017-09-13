@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         ImageDisplayAdapter.ImageDisplayAdapterOnClickHandler,
@@ -46,11 +47,18 @@ public class MainActivity extends AppCompatActivity implements
     private RecyclerView mRecyclerView;
 
     private static int DISPLAY_STATE = 0;
+    private int scrollState = -1;
+    private int scrollOffset;
+    private int scrollRange;
 
     // Make your own api_key.properties file in /app folder. Variable name myAPI_Key
     private static final String api_key = BuildConfig.MOVIES_DB_API_KEY;
 
     private final static String BUNDLE_RECYCLER_LAYOUT = "Recycler_Layout";
+    private final static String SCROLL_OFFSET = "scrollOffset";
+    private final static String SCROLL_RANGE = "scrollRange";
+    private final static String DISPLAY_STATUS = "displayStatus";
+
     private Parcelable savedRecyclerLayoutState;
 
     // Data columns for display of movie data
@@ -85,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements
         mErrorDisplay = (TextView) findViewById(R.id.error_display);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView_display);
 
-        GridLayoutManager layoutManager_display = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        GridLayoutManager layoutManager_display
+                = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager_display);
 
         mImageDisplayAdapter = new ImageDisplayAdapter(this);
@@ -102,12 +111,8 @@ public class MainActivity extends AppCompatActivity implements
         displayOnRequest();
 
         getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
+        Log.d(TAG, "onCreate: ");
     }
 
     @Override
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements
         inflater.inflate(R.menu.movie_menu, menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -152,7 +158,17 @@ public class MainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
         savedRecyclerLayoutState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(BUNDLE_RECYCLER_LAYOUT, savedRecyclerLayoutState);
+        scrollOffset = mRecyclerView.computeVerticalScrollOffset();
+        scrollRange = mRecyclerView.computeVerticalScrollRange();
+
+        outState.putInt(SCROLL_RANGE, scrollRange);
+        outState.putInt(SCROLL_OFFSET, scrollOffset);
+        outState.putInt(DISPLAY_STATUS, DISPLAY_STATE);
+
+        Log.d(TAG, "onSaveInstanceState: ScrollRange " + scrollRange);
+        Log.d(TAG, "onSaveInstanceState: ScrollExtent " + scrollOffset);
     }
+
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -161,7 +177,31 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState != null){
             savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             mRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            scrollRange = savedInstanceState.getInt(SCROLL_RANGE);
+            scrollOffset = savedInstanceState.getInt(SCROLL_OFFSET);
+            DISPLAY_STATE = savedInstanceState.getInt(DISPLAY_STATUS);
         }
+
+        if(DISPLAY_STATE == 2){
+            showMovieCatalogue();
+        }
+
+        Log.d(TAG, "onRestoreInstanceState: ScrollRange " + scrollRange);
+        Log.d(TAG, "onSaveInstanceState: ScrollExtent " + scrollOffset);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        scrollState = mRecyclerView.getScrollY();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -184,10 +224,19 @@ public class MainActivity extends AppCompatActivity implements
     private void displayOnRequest(){
         if(!isInternetConnected()){
             showDisplayError();
+
         } else {
             new RetrieveFeedTask().execute(api_key);
             showMovieCatalogue();
         }
+    }
+
+    // Layout manager can only be restored after all images are loaded.
+    // This should go in PostExecute of AsyncTask
+    private void restoreLayoutManagerPosition(ArrayList<Movie> movies) {
+        double relativeScrollPosition = (double)scrollOffset/(double)scrollRange;
+        double scrollPos = relativeScrollPosition * (double)movies.size();
+        mRecyclerView.scrollToPosition((int)scrollPos);
     }
 
     private boolean isInternetConnected(){
@@ -267,8 +316,11 @@ public class MainActivity extends AppCompatActivity implements
             try {
                 if (movieResults != null) {
                 // Set data to be retrieved when DetailActivity is called
-                    mImageDisplayAdapter.setMovies(MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults));
+                    mImageDisplayAdapter.setMovies
+                            (MovieDataBaseUtils.getMovieObjectsFromJSON(movieResults));
                     showMovieCatalogue();
+                    Log.d(TAG, "onPostExecute: Movies Loaded");
+                    restoreLayoutManagerPosition(mImageDisplayAdapter.getMovies());
                 }
             } catch (JSONException e){
                 e.printStackTrace();
